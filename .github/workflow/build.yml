@@ -1,0 +1,39 @@
+# .github/workflows/build-windows.yml
+name: Build OpenCode for Windows
+
+on:
+  workflow_dispatch: # 允许手动触发
+  push:
+    branches: [ main ] # 当推送到 main 分支时触发
+
+jobs:
+  build-windows:
+    runs-on: windows-latest # 在 GitHub 托管的 Windows 环境运行
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest # 或指定具体版本如 1.1.0
+
+      - name: Install dependencies
+        run: bun install
+
+      # 关键步骤：根据项目的具体构建脚本进行配置
+      - name: Build executable
+        run: cd packages/opencode && bun run build --single
+        # 你需要查看项目 package.json 中的 "scripts" 部分，
+        # 找到构建 Windows 可执行文件的命令，例如 "build:win" 或 "dist:win"。
+        # 并将上面的 "build:windows" 替换为实际的命令。
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode-windows
+          path: |
+            dist/*.exe
+            dist/*.msi
+            # 路径和文件名需要根据你项目构建出的产物进行调整
