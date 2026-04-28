@@ -11,9 +11,6 @@ jobs:
     runs-on: windows-latest # 在 GitHub 托管的 Windows 环境运行
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -34,6 +31,5 @@ jobs:
         with:
           name: opencode-windows
           path: |
-            dist/*.exe
-            dist/*.msi
+            dist/**/*.exe
             # 路径和文件名需要根据你项目构建出的产物进行调整
