@@ -20,12 +20,12 @@ jobs:
       - name: Install dependencies
         run: bun install
       - name: Build executable
+        working-directory: ./packages/opencode
         run: |
-          cd packages/opencode
           bun run build
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: opencode-builds
           path: |
-            dist/**/*
+            ./packages/opencode/dist/**/*
