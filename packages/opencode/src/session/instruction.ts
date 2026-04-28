@@ -171,8 +171,8 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | Config.S
         const remote = yield* Effect.forEach(urls, fetch, { concurrency: 4 })
 
         return [
-          ...Array.from(paths).flatMap((item, i) => (files[i] ? [`Instructions from: ${item}\n${files[i]}`] : [])),
-          ...urls.flatMap((item, i) => (remote[i] ? [`Instructions from: ${item}\n${remote[i]}`] : [])),
+          ...Array.from(paths).flatMap((item, i) => (files[i] ? [`${item} 文件的指令：\n${files[i]}`] : [])),
+          ...urls.flatMap((item, i) => (remote[i] ? [`${item} 文件的指令：\n${remote[i]}`] : [])),
         ]
       })
 
@@ -218,7 +218,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | Config.S
           set.add(found)
           const content = yield* read(found)
           if (content) {
-            results.push({ filepath: found, content: `Instructions from: ${found}\n${content}` })
+            results.push({ filepath: found, content: `${found} 文件的指令：\n${content}` })
           }
 
           current = path.dirname(current)

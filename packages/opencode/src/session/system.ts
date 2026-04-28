@@ -49,14 +49,14 @@ export const layer = Layer.effect(
         const project = Instance.project
         return [
           [
-            `You are powered by the model named ${model.api.id}. The exact model ID is ${model.providerID}/${model.api.id}`,
-            `Here is some useful information about the environment you are running in:`,
+            `您正由 ${model.api.id} 模型驱动，完整模型ID是 ${model.providerID}/${model.api.id}`,
+            `以下是关于您当前运行环境的一些信息：`,
             `<env>`,
-            `  Working directory: ${Instance.directory}`,
-            `  Workspace root folder: ${Instance.worktree}`,
-            `  Is directory a git repo: ${project.vcs === "git" ? "yes" : "no"}`,
-            `  Platform: ${process.platform}`,
-            `  Today's date: ${new Date().toDateString()}`,
+            `  工作目录：${Instance.directory}`,
+            `  工作区根目录：${Instance.worktree}`,
+            `  ${project.vcs === "git" ? "当前目录是git仓库" : "当前目录不是git仓库"}`,
+            `  平台：${process.platform}`,
+            `  日期：${new Date().toDateString()}`,
             `</env>`,
           ].join("\n"),
         ]
@@ -68,8 +68,8 @@ export const layer = Layer.effect(
         const list = yield* skill.available(agent)
 
         return [
-          "Skills provide specialized instructions and workflows for specific tasks.",
-          "Use the skill tool to load a skill when a task matches its description.",
+          "技能可为特定任务提供专门的指令和工作流程。",
+          "当任务与技能描述匹配时，请使用技能工具来加载对应的技能。",
           // the agents seem to ingest the information about skills a bit better if we present a more verbose
           // version of them here and a less verbose version in tool description, rather than vice versa.
           Skill.fmt(list, { verbose: true }),

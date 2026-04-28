@@ -57,15 +57,15 @@ import { EffectBridge } from "@/effect/bridge"
 // @ts-ignore
 globalThis.AI_SDK_LOG_WARNINGS = false
 
-const STRUCTURED_OUTPUT_DESCRIPTION = `Use this tool to return your final response in the requested structured format.
+const STRUCTURED_OUTPUT_DESCRIPTION = `使用此工具以请求的结构化格式返回您的最终响应。
 
-IMPORTANT:
-- You MUST call this tool exactly once at the end of your response
-- The input must be valid JSON matching the required schema
-- Complete all necessary research and tool calls BEFORE calling this tool
-- This tool provides your final answer - no further actions are taken after calling it`
+重要提示：
+- 您必须在响应的末尾**恰好调用此工具一次**
+- 输入的必须是符合所需架构的有效JSON
+- 在调用此工具之前，请**完成**所有必要的研究和其他工具调用
+- 此工具将提供您的最终答案——调用后不会再有进一步的行动`
 
-const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `IMPORTANT: The user has requested structured output. You MUST use the StructuredOutput tool to provide your final response. Do NOT respond with plain text - you MUST call the StructuredOutput tool with your answer formatted according to the schema.`
+const STRUCTURED_OUTPUT_SYSTEM_PROMPT = `重要：用户已请求结构化输出。您必须使用 StructuredOutput 工具来提供最终响应。请不要以纯文本回复——您必须调用 StructuredOutput 工具，并根据架构格式化您的答案。`
 
 const log = Log.create({ service: "session.prompt" })
 const elog = EffectLogger.create({ service: "session.prompt" })
@@ -263,7 +263,7 @@ export const layer = Layer.effect(
           messageID: userMessage.info.id,
           sessionID: userMessage.info.sessionID,
           type: "text",
-          text: `${BUILD_SWITCH}\n\nA plan file exists at ${plan}. You should execute on the plan defined within it`,
+          text: `${BUILD_SWITCH}\n\n计划文件存在于 ${plan}。您应根据其中定义的计划执行`,
           synthetic: true,
         })
         userMessage.parts.push(part)
@@ -280,75 +280,75 @@ export const layer = Layer.effect(
         messageID: userMessage.info.id,
         sessionID: userMessage.info.sessionID,
         type: "text",
-        text: `<system-reminder>
-Plan mode is active. The user indicated that they do not want you to execute yet -- you MUST NOT make any edits (with the exception of the plan file mentioned below), run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supersedes any other instructions you have received.
+		text: `<system-reminder>
+计划模式已激活。用户表示他们目前不希望您执行任何操作——您绝不可进行任何编辑（下文提到的计划文件除外）、运行任何非只读工具（包括更改配置或提交代码），或以任何其他方式对系统进行更改。此指令优先级高于您收到的任何其他指示。
 
-## Plan File Info:
-${exists ? `A plan file already exists at ${plan}. You can read it and make incremental edits using the edit tool.` : `No plan file exists yet. You should create your plan at ${plan} using the write tool.`}
-You should build your plan incrementally by writing to or editing this file. NOTE that this is the only file you are allowed to edit - other than this you are only allowed to take READ-ONLY actions.
+## 计划文件信息：
+${exists ? `计划文件已存在于 ${plan}。您可以使用编辑工具读取并对其进行增量编辑。` : `计划文件尚不存在。您应使用写入工具在 ${plan} 创建您的计划。`}
+您应通过写入或编辑此文件来增量构建您的计划。注意：这是您唯一允许编辑的文件——除此以外，您只能采取只读操作。
 
-## Plan Workflow
+## 计划工作流程
 
-### Phase 1: Initial Understanding
-Goal: Gain a comprehensive understanding of the user's request by reading through code and asking them questions. Critical: In this phase you should only use the explore subagent type.
+### 第一阶段：初步理解
+目标：通过阅读代码并向用户提问，全面理解用户的请求。关键：在此阶段，您应仅使用探索子代理类型。
 
-1. Focus on understanding the user's request and the code associated with their request
+1. 专注于理解用户的请求以及与其请求相关的代码。
 
-2. **Launch up to 3 explore agents IN PARALLEL** (single message, multiple tool calls) to efficiently explore the codebase.
- - Use 1 agent when the task is isolated to known files, the user provided specific file paths, or you're making a small targeted change.
- - Use multiple agents when: the scope is uncertain, multiple areas of the codebase are involved, or you need to understand existing patterns before planning.
- - Quality over quantity - 3 agents maximum, but you should try to use the minimum number of agents necessary (usually just 1)
- - If using multiple agents: Provide each agent with a specific search focus or area to explore. Example: One agent searches for existing implementations, another explores related components, a third investigates testing patterns
+2. **并行启动最多 3 个探索代理**（单条消息，多次工具调用），以高效探索代码库。
+ - 当任务局限于已知文件、用户提供了具体的文件路径，或者您正在进行小范围有针对性的更改时，使用 1 个代理。
+ - 在以下情况下使用多个代理：范围不确定、涉及代码库的多个部分，或者在规划前需要了解现有模式。
+ - 质量优于数量——最多 3 个代理，但您应尽量使用必要的最小数量（通常只需 1 个）。
+ - 如果使用多个代理：为每个代理提供特定的搜索重点或探索领域。例如：一个代理搜索现有实现，另一个探索相关组件，第三个研究测试模式。
 
-3. After exploring the code, use the question tool to clarify ambiguities in the user request up front.
+3. 探索代码后，使用提问工具预先澄清用户请求中的模糊之处。
 
-### Phase 2: Design
-Goal: Design an implementation approach.
+### 第二阶段：设计
+目标：设计实施方案。
 
-Launch general agent(s) to design the implementation based on the user's intent and your exploration results from Phase 1.
+启动通用代理，根据用户意图和您在第一阶段的探索结果来设计实施方案。
 
-You can launch up to 1 agent(s) in parallel.
+您可以并行启动最多 1 个代理。
 
-**Guidelines:**
-- **Default**: Launch at least 1 Plan agent for most tasks - it helps validate your understanding and consider alternatives
-- **Skip agents**: Only for truly trivial tasks (typo fixes, single-line changes, simple renames)
+**指南：**
+- **默认**：对于大多数任务，至少启动 1 个计划代理——这有助于验证您的理解并考虑替代方案。
+- **跳过代理**：仅用于真正琐碎的任务（拼写错误修复、单行更改、简单重命名）。
 
-Examples of when to use multiple agents:
-- The task touches multiple parts of the codebase
-- It's a large refactor or architectural change
-- There are many edge cases to consider
-- You'd benefit from exploring different approaches
+何时使用多个代理的示例：
+- 任务涉及代码库的多个部分
+- 属于大规模重构或架构变更
+- 存在许多边界情况需要考虑
+- 探索不同方法能带来好处
 
-Example perspectives by task type:
-- New feature: simplicity vs performance vs maintainability
-- Bug fix: root cause vs workaround vs prevention
-- Refactoring: minimal change vs clean architecture
+按任务类型划分的示例视角：
+- 新功能：简单性 vs 性能 vs 可维护性
+- 错误修复：根本原因 vs 变通方案 vs 预防
+- 重构：最小变更 vs 清晰的架构
 
-In the agent prompt:
-- Provide comprehensive background context from Phase 1 exploration including filenames and code path traces
-- Describe requirements and constraints
-- Request a detailed implementation plan
+在代理提示中：
+- 提供第一阶段探索获得的全面背景信息，包括文件名和代码路径跟踪
+- 描述需求和约束
+- 请求详细的实施计划
 
-### Phase 3: Review
-Goal: Review the plan(s) from Phase 2 and ensure alignment with the user's intentions.
-1. Read the critical files identified by agents to deepen your understanding
-2. Ensure that the plans align with the user's original request
-3. Use question tool to clarify any remaining questions with the user
+### 第三阶段：审查
+目标：审查第二阶段产生的计划，并确保与用户意图保持一致。
+1. 阅读代理识别的关键文件，加深理解
+2. 确保计划与用户的原始请求保持一致
+3. 使用提问工具与用户澄清任何剩余问题
 
-### Phase 4: Final Plan
-Goal: Write your final plan to the plan file (the only file you can edit).
-- Include only your recommended approach, not all alternatives
-- Ensure that the plan file is concise enough to scan quickly, but detailed enough to execute effectively
-- Include the paths of critical files to be modified
-- Include a verification section describing how to test the changes end-to-end (run the code, use MCP tools, run tests)
+### 第四阶段：最终计划
+目标：将您的最终计划写入计划文件（这是您唯一可以编辑的文件）。
+- 仅包含您推荐的方法，而非所有替代方案
+- 确保计划文件足够简洁以便快速浏览，同时又足够详细以便有效执行
+- 包含要修改的关键文件的路径
+- 包含一个验证部分，描述如何端到端地测试更改（运行代码、使用 MCP 工具、运行测试）
 
-### Phase 5: Call plan_exit tool
-At the very end of your turn, once you have asked the user questions and are happy with your final plan file - you should always call plan_exit to indicate to the user that you are done planning.
-This is critical - your turn should only end with either asking the user a question or calling plan_exit. Do not stop unless it's for these 2 reasons.
+### 第五阶段：调用 plan_exit 工具
+在您回合的最后，一旦您向用户提出了问题并对您的最终计划文件感到满意——您应始终调用 plan_exit 来向用户表明您已完成规划。
+这一点至关重要——您的回合应仅以向用户提问或调用 plan_exit 结束。除非出于这两个原因，否则不要停止。
 
-**Important:** Use question tool to clarify requirements/approach, use plan_exit to request plan approval. Do NOT use question tool to ask "Is this plan okay?" - that's what plan_exit does.
+**重要**：使用提问工具来澄清需求/方法，使用 plan_exit 来请求计划批准。请勿使用提问工具来询问“这个计划可以吗？”——那是 plan_exit 的功能。
 
-NOTE: At any point in time through this workflow you should feel free to ask the user questions or clarifications. Don't make large assumptions about user intent. The goal is to present a well researched plan to the user, and tie any loose ends before implementation begins.
+注意：在此工作流程的任何时间点，您都可以随时向用户提问或寻求澄清。不要对用户意图做过多假设。目标是向用户呈现一个经过充分研究的计划，并在实施开始前解决所有未尽事宜。
 </system-reminder>`,
         synthetic: true,
       })
@@ -715,7 +715,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         messageID: summaryUserMsg.id,
         sessionID,
         type: "text",
-        text: "Summarize the task tool output above and continue with your task.",
+        text: "总结上述任务工具输出，然后继续执行任务。",
         synthetic: true,
       } satisfies MessageV2.TextPart)
     })
@@ -753,7 +753,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
               id: PartID.ascending(),
               messageID: userMsg.id,
               sessionID: input.sessionID,
-              text: "The following tool was executed by the user",
+              text: "用户执行了以下工具",
               synthetic: true,
             }
             yield* sessions.updatePart(userPart)

@@ -37,42 +37,42 @@ const PRUNE_PROTECTED_TOOLS = ["skill"]
 const DEFAULT_TAIL_TURNS = 2
 const MIN_PRESERVE_RECENT_TOKENS = 2_000
 const MAX_PRESERVE_RECENT_TOKENS = 8_000
-const SUMMARY_TEMPLATE = `Output exactly the Markdown structure shown inside <template> and keep the section order unchanged. Do not include the <template> tags in your response.
+const SUMMARY_TEMPLATE = `严格按照 <template> 内部所示的 Markdown 结构输出，并保持章节顺序不变。响应中不要包含 <template> 标签。
 <template>
-## Goal
-- [single-sentence task summary]
+## 目标
+- [单句任务摘要]
 
-## Constraints & Preferences
-- [user constraints, preferences, specs, or "(none)"]
+## 约束与偏好
+- [用户约束、偏好、规格说明，或“（无）”]
 
-## Progress
-### Done
-- [completed work or "(none)"]
+## 进度
+### 已完成
+- [已完成的工作，或“（无）”]
 
-### In Progress
-- [current work or "(none)"]
+### 进行中
+- [当前工作，或“（无）”]
 
-### Blocked
-- [blockers or "(none)"]
+### 受阻项
+- [遇到的阻碍，或“（无）”]
 
-## Key Decisions
-- [decision and why, or "(none)"]
+## 关键决策
+- [决策及原因，或“（无）”]
 
-## Next Steps
-- [ordered next actions or "(none)"]
+## 后续步骤
+- [有序的后续行动，或“（无）”]
 
-## Critical Context
-- [important technical facts, errors, open questions, or "(none)"]
+## 关键上下文
+- [重要的技术事实、错误、未决问题，或“（无）”]
 
-## Relevant Files
-- [file or directory path: why it matters, or "(none)"]
+## 相关文件
+- [文件或目录路径：说明其重要性，或“（无）”]
 </template>
 
-Rules:
-- Keep every section, even when empty.
-- Use terse bullets, not prose paragraphs.
-- Preserve exact file paths, commands, error strings, and identifiers when known.
-- Do not mention the summary process or that context was compacted.`
+规则：
+- 即使为空，每个章节都必须保留。
+- 使用简洁的项目符号，而非段落描述。
+- 在已知时，请保留精确的文件路径、命令、错误字符串和标识符。
+- 不要提及摘要的生成过程或上下文的压缩情况。`
 type Turn = {
   start: number
   end: number
@@ -121,13 +121,13 @@ function completedCompactions(messages: MessageV2.WithParts[]) {
 function buildPrompt(input: { previousSummary?: string; context: string[] }) {
   const anchor = input.previousSummary
     ? [
-        "Update the anchored summary below using the conversation history above.",
-        "Preserve still-true details, remove stale details, and merge in the new facts.",
+        "请根据上方的对话历史更新下方的摘要。",
+        "保留依然正确的细节，删除过时的细节，并合并新的事实。",
         "<previous-summary>",
         input.previousSummary,
         "</previous-summary>",
       ].join("\n")
-    : "Create a new anchored summary from the conversation history above."
+    : "请根据上方的对话历史创建一个新的摘要。"
   return [anchor, SUMMARY_TEMPLATE, ...input.context].join("\n\n")
 }
 
@@ -532,9 +532,9 @@ export const layer: Layer.Layer<
             })
             const text =
               (input.overflow
-                ? "The previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\n"
+                ? "由于媒体附件过大，之前的请求超过了服务提供商的尺寸限制。对话已被压缩，媒体文件已从上下文中移除。如果用户询问的是附加的图片或文件，请说明附件过大无法处理，并建议他们尝试使用更小或更少的文件重新提交。\n\n"
                 : "") +
-              "Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed."
+              "如果你有后续步骤，请继续；如果不确定如何继续，请停止并请求用户进一步说明。"
             yield* session.updatePart({
               id: PartID.ascending(),
               messageID: continueMsg.id,
