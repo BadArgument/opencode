@@ -1,0 +1,42 @@
+# .github/workflows/build-windows.yml
+name: Build OpenCode for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  # 作业2：安装依赖
+  install-dependencies:
+    runs-on: windows-latest
+    steps:      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install
+      
+  # 作业3：构建项目
+  build-project:
+    needs: install-dependencies
+    runs-on: windows-latest
+    steps:      
+      - name: Build executable
+        run: |
+          cd packages/opencode
+          bun run build
+  # 作业4：测试构建结果
+  upload-artifact:
+    needs: build-project
+    runs-on: windows-latest
+    steps:
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode-builds
+          path: |
+            packages/opencode/dist/**/*
+            dist/**/*
