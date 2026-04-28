@@ -262,7 +262,7 @@ export const defaultLayer = layer.pipe(
 )
 
 export function fmt(list: Info[], opts: { verbose: boolean }) {
-  if (list.length === 0) return "No skills are currently available."
+  if (list.length === 0) return "无Skill可用。"
   if (opts.verbose) {
     return [
       "<available_skills>",
@@ -280,7 +280,7 @@ export function fmt(list: Info[], opts: { verbose: boolean }) {
   }
 
   return [
-    "## Available Skills",
+    "## 可用Skill",
     ...list
       .toSorted((a, b) => a.name.localeCompare(b.name))
       .map((skill) => `- **${skill.name}**: ${skill.description}`),
