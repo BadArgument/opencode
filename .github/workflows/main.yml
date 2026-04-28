@@ -24,7 +24,7 @@ jobs:
         run: |
           # 创建临时文件避免错误
           echo "CI Build" > ../../.github/TEAM_MEMBERS
-          bun run build
+          bun run build --single
         env:
           CI: true
           SKIP_TEAM_CHECK: true  # 如果构建脚本支持
