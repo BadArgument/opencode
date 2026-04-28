@@ -10,7 +10,9 @@ jobs:
   # 作业2：安装依赖
   install-dependencies:
     runs-on: windows-latest
-    steps:      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -24,6 +26,8 @@ jobs:
     needs: install-dependencies
     runs-on: windows-latest
     steps:      
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Build executable
         run: |
           cd packages/opencode
@@ -33,10 +37,11 @@ jobs:
     needs: build-project
     runs-on: windows-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: opencode-builds
           path: |
             packages/opencode/dist/**/*
-            dist/**/*
