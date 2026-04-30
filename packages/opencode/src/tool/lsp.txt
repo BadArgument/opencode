@@ -1,24 +1,24 @@
-Interact with Language Server Protocol (LSP) servers to get code intelligence features.
+与语言服务器协议 (LSP) 服务器交互，以获取代码智能功能。
 
-Supported operations:
-- goToDefinition: Find where a symbol is defined
-- findReferences: Find all references to a symbol
-- hover: Get hover information (documentation, type info) for a symbol
-- documentSymbol: Get all symbols (functions, classes, variables) in a document
-- workspaceSymbol: List project-wide symbols matching a query string
-- goToImplementation: Find implementations of an interface or abstract method
-- prepareCallHierarchy: Get call hierarchy item at a position (functions/methods)
-- incomingCalls: Find all functions/methods that call the function at a position
-- outgoingCalls: Find all functions/methods called by the function at a position
+支持的操作：
+- goToDefinition: 查找符号的定义位置
+- findReferences: 查找对某个符号的所有引用
+- hover: 获取符号的悬停信息（文档、类型信息）
+- documentSymbol: 获取文档中的所有符号（函数、类、变量）
+- workspaceSymbol: 列出项目范围内与查询字符串匹配的符号
+- goToImplementation: 查找接口或抽象方法的实现
+- prepareCallHierarchy: 获取某个位置的调用层次结构项（函数/方法）
+- incomingCalls: 查找调用该位置函数的所有函数/方法
+- outgoingCalls: 查找被该位置函数调用的所有函数/方法
 
-All operations require:
-- filePath: The file to operate on
-- line: The line number (1-based, as shown in editors)
-- character: The character offset (1-based, as shown in editors)
+所有操作均需要：
+- filePath: 要操作的文件路径
+- line: 行号（从 1 开始计数，与编辑器中显示的相同）
+- character: 字符偏移量（从 1 开始计数，与编辑器中显示的相同）
 
-workspaceSymbol also accepts:
-- query: A query string to filter symbols by. Empty string requests all symbols.
+workspaceSymbol 还接受：
+- query: 用于按符号过滤的查询字符串。空字符串表示请求所有符号。
 
-For workspaceSymbol, filePath is not sent in the LSP workspace/symbol request. It is used by opencode to select and start the matching LSP server.
+对于 workspaceSymbol 操作，filePath 不会在 LSP 的 workspace/symbol 请求中发送。它被 opencode 用于选择和启动匹配的 LSP 服务器。
 
-Note: LSP servers must be configured for the file type. If no server is available, an error will be returned.
+注意：必须为文件类型配置 LSP 服务器。如果无可用服务器，将返回错误。
