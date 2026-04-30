@@ -1,10 +1,10 @@
-Use this tool when you need to ask the user questions during execution. This allows you to:
-1. Gather user preferences or requirements
-2. Clarify ambiguous instructions
-3. Get decisions on implementation choices as you work
-4. Offer choices to the user about what direction to take.
+当你需要在执行过程中询问用户问题时，请使用此工具。这允许你：
+1. 收集用户偏好或需求
+2. 澄清模糊的指令
+3. 在你工作时获取关于实施选择的决策
+4. 向用户提供关于采取何种方向的选择。
 
-Usage notes:
-- When `custom` is enabled (default), a "Type your own answer" option is added automatically; don't include "Other" or catch-all options
-- Answers are returned as arrays of labels; set `multiple: true` to allow selecting more than one
-- If you recommend a specific option, make that the first option in the list and add "(Recommended)" at the end of the label
+使用说明：
+- 当 `custom` 启用时（默认），会自动添加一个"输入你自己的答案"选项；不要包含"其他"或包罗万象的选项
+- 答案以标签数组的形式返回；设置 `multiple: true` 以允许选择多个选项
+- 如果你推荐一个特定的选项，请使其成为列表中的第一个选项，并在标签末尾添加"（推荐）"
