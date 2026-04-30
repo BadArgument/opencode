@@ -1,8 +1,8 @@
-Writes a file to the local filesystem.
+将文件写入本地文件系统。
 
-Usage:
-- This tool will overwrite the existing file if there is one at the provided path.
-- If this is an existing file, you MUST use the Read tool first to read the file's contents. This tool will fail if you did not read the file first.
-- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.
-- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
-- Only use emojis if the user explicitly requests it. Avoid writing emojis to files unless asked.
+使用说明：
+- 如果提供的路径已存在文件，此工具将**覆盖**现有文件。
+- 如果这是一个已存在的文件，你**必须**先使用 Read 工具读取文件内容。如果你没有先读取文件，此工具将失败。
+- **始终**优先编辑代码库中已有的文件。除非明确要求，否则**绝不**写入新文件。
+- **绝不**主动创建文档文件 (*.md) 或 README 文件。仅在用户明确要求时才创建文档文件。
+- 仅当用户明确要求时才使用表情符号。除非被问到，否则避免将表情符号写入文件。
