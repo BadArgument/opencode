@@ -24,12 +24,12 @@ const SAMPLE_BYTES = 4096
 // Schema output is identical (`type: "number"`), so the LLM view is
 // unchanged; purely CLI-facing uses must now send numbers rather than strings.
 export const Parameters = Schema.Struct({
-  filePath: Schema.String.annotate({ description: "The absolute path to the file or directory to read" }),
+  filePath: Schema.String.annotate({ description: "要读取的文件或目录的绝对路径" }),
   offset: Schema.optional(Schema.Number).annotate({
-    description: "The line number to start reading from (1-indexed)",
+    description: "开始读取的行号（从 1 开始计数）",
   }),
   limit: Schema.optional(Schema.Number).annotate({
-    description: "The maximum number of lines to read (defaults to 2000)",
+    description: "最大读取行数（默认为 2000）",
   }),
 })
 
