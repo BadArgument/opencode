@@ -52,14 +52,14 @@ const FLAGS = new Set(["-destination", "-literalpath", "-path"])
 const SWITCHES = new Set(["-confirm", "-debug", "-force", "-nonewline", "-recurse", "-verbose", "-whatif"])
 
 export const Parameters = Schema.Struct({
-  command: Schema.String.annotate({ description: "The command to execute" }),
-  timeout: Schema.optional(Schema.Number).annotate({ description: "Optional timeout in milliseconds" }),
+  command: Schema.String.annotate({ description: "要执行的命令" }),
+  timeout: Schema.optional(Schema.Number).annotate({ description: "可选的超时时间（毫秒）" }),
   workdir: Schema.optional(Schema.String).annotate({
-    description: `The working directory to run the command in. Defaults to the current directory. Use this instead of 'cd' commands.`,
+    description: `运行命令的工作目录。默认为当前目录。请使用此参数代替 'cd' 命令。`,
   }),
   description: Schema.String.annotate({
     description:
-      "Clear, concise description of what this command does in 5-10 words. Examples:\nInput: ls\nOutput: Lists files in current directory\n\nInput: git status\nOutput: Shows working tree status\n\nInput: npm install\nOutput: Installs package dependencies\n\nInput: mkdir foo\nOutput: Creates directory 'foo'",
+      "对该命令功能的清晰、简洁描述，控制在 5-10 个词以内。示例：\n输入：ls\n输出：列出当前目录中的文件\n\n输入：git status\n输出：显示工作区状态\n\n输入：npm install\n输出：安装软件包依赖\n\n输入：mkdir foo\n输出：创建目录 'foo'",
   }),
 })
 
@@ -519,7 +519,7 @@ export const BashTool = Tool.define(
       const meta: string[] = []
       if (expired) {
         meta.push(
-          `bash tool terminated command after exceeding timeout ${input.timeout} ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.`,
+          `bash 工具在超过 ${input.timeout} 毫秒的超时时间后终止了命令。如果该命令预期需要更长时间且并非在等待交互式输入，请尝试使用更大的超时值（毫秒）重新执行。`,
         )
       }
       if (aborted) meta.push("User aborted the command")
@@ -531,10 +531,10 @@ export const BashTool = Tool.define(
       }
 
       let output = end.text
-      if (!output) output = "(no output)"
+      if (!output) output = "(无输出)"
 
       if (cut && file) {
-        output = `...output truncated...\n\nFull output saved to: ${file}\n\n` + output
+        output = `...输出已截断...\n\n完整输出已保存至：${file}\n\n` + output
       }
 
       if (meta.length > 0) {
@@ -571,8 +571,8 @@ export const BashTool = Tool.define(
         const name = Shell.name(shell)
         const chain =
           name === "powershell"
-            ? "If the commands depend on each other and must run sequentially, avoid '&&' in this shell because Windows PowerShell 5.1 does not support it. Use PowerShell conditionals such as `cmd1; if ($?) { cmd2 }` when later commands must depend on earlier success."
-            : "If the commands depend on each other and must run sequentially, use a single Bash call with '&&' to chain them together (e.g., `git add . && git commit -m \"message\" && git push`). For instance, if one operation must complete before another starts (like mkdir before cp, Write before Bash for git operations, or git add before git commit), run these operations sequentially instead."
+            ? "如果命令之间存在依赖关系且必须按顺序运行，请在此 Shell 中避免使用 '&&'，因为 Windows PowerShell 5.1 不支持该语法。当后续命令的执行依赖于前序命令成功时，请使用 PowerShell 条件语句，例如：`cmd1; if ($?) { cmd2 }`。"
+            : "如果命令之间存在依赖关系且必须按顺序运行，请使用单个 Bash 调用并通过 '&&' 将它们串联起来（例如：`git add . && git commit -m \"message\" && git push`）。例如，如果一个操作必须在另一个操作开始之前完成（如 cp 之前需要 mkdir，git 操作需要在 Bash 中写入，或 git commit 之前需要 git add），请改为按顺序执行这些操作。"
         log.info("bash tool using shell", { shell })
 
         const limits = yield* trunc.limits()
