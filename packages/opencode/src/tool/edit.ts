@@ -45,13 +45,13 @@ function lock(filePath: string) {
 }
 
 export const Parameters = Schema.Struct({
-  filePath: Schema.String.annotate({ description: "The absolute path to the file to modify" }),
-  oldString: Schema.String.annotate({ description: "The text to replace" }),
+  filePath: Schema.String.annotate({ description: "要修改的文件的绝对路径" }),
+  oldString: Schema.String.annotate({ description: "要替换的文本" }),
   newString: Schema.String.annotate({
-    description: "The text to replace it with (must be different from oldString)",
+    description: "用于替换的新文本（必须与 oldString 不同）",
   }),
   replaceAll: Schema.optional(Schema.Boolean).annotate({
-    description: "Replace all occurrences of oldString (default false)",
+    description: "替换所有匹配到的 oldString（默认为 false）",
   }),
 })
 
