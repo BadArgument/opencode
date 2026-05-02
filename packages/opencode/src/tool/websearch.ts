@@ -5,19 +5,19 @@ import * as McpExa from "./mcp-exa"
 import DESCRIPTION from "./websearch.txt"
 
 export const Parameters = Schema.Struct({
-  query: Schema.String.annotate({ description: "Websearch query" }),
+  query: Schema.String.annotate({ description: "网络搜索查询词" }),
   numResults: Schema.optional(Schema.Number).annotate({
-    description: "Number of search results to return (default: 8)",
+    description: "返回的搜索结果数量（默认：8）",
   }),
   livecrawl: Schema.optional(Schema.Literals(["fallback", "preferred"])).annotate({
     description:
-      "Live crawl mode - 'fallback': use live crawling as backup if cached content unavailable, 'preferred': prioritize live crawling (default: 'fallback')",
+      "实时抓取模式 —— 'fallback'：若缓存内容不可用则使用实时抓取作为后备；'preferred'：优先使用实时抓取（默认：'fallback'）",
   }),
   type: Schema.optional(Schema.Literals(["auto", "fast", "deep"])).annotate({
-    description: "Search type - 'auto': balanced search (default), 'fast': quick results, 'deep': comprehensive search",
+    description: "搜索类型 —— 'auto'：平衡型搜索（默认）；'fast'：快速结果；'deep'：全面搜索",
   }),
   contextMaxCharacters: Schema.optional(Schema.Number).annotate({
-    description: "Maximum characters for context string optimized for LLMs (default: 10000)",
+    description: "面向 LLM 优化的上下文字符串最大字符数（默认：10000）",
   }),
 })
 
@@ -61,7 +61,7 @@ export const WebSearchTool = Tool.define(
           )
 
           return {
-            output: result ?? "No search results found. Please try a different query.",
+            output: result ?? "未找到搜索结果。请尝试更换查询词。",
             title: `Web search: ${params.query}`,
             metadata: {},
           }
