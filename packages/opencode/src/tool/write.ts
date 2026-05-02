@@ -18,9 +18,9 @@ import * as Bom from "@/util/bom"
 const MAX_PROJECT_DIAGNOSTICS_FILES = 5
 
 export const Parameters = Schema.Struct({
-  content: Schema.String.annotate({ description: "The content to write to the file" }),
+  content: Schema.String.annotate({ description: "要写入文件的内容" }),
   filePath: Schema.String.annotate({
-    description: "The absolute path to the file to write (must be absolute, not relative)",
+    description: "要写入文件的绝对路径（必须是绝对路径，不能是相对路径）",
   }),
 })
 
@@ -70,7 +70,7 @@ export const WriteTool = Tool.define(
             event: exists ? "change" : "add",
           })
 
-          let output = "Wrote file successfully."
+          let output = "文件顺利写入。"
           yield* lsp.touchFile(filepath, "document")
           const diagnostics = yield* lsp.diagnostics()
           const normalizedFilepath = AppFileSystem.normalizePath(filepath)
@@ -81,11 +81,11 @@ export const WriteTool = Tool.define(
             const block = LSP.Diagnostic.report(current ? filepath : file, issues)
             if (!block) continue
             if (current) {
-              output += `\n\nLSP errors detected in this file, please fix:\n${block}`
+              output += `\n\n检测到此文件存在 LSP 错误，请修复:\n${block}`
               continue
             }
             projectDiagnosticsCount++
-            output += `\n\nLSP errors detected in other files:\n${block}`
+            output += `\n\n检测到其他文件存在 LSP 错误:\n${block}`
           }
 
           return {
