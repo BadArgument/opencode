@@ -8,7 +8,7 @@ import * as Tool from "./tool"
 import DESCRIPTION from "./skill.txt"
 
 export const Parameters = Schema.Struct({
-  name: Schema.String.annotate({ description: "The name of the skill from available_skills" }),
+  name: Schema.String.annotate({ description: "来自 available_skills 的技能名称" }),
 })
 
 export const SkillTool = Tool.define(
@@ -18,7 +18,7 @@ export const SkillTool = Tool.define(
     const rg = yield* Ripgrep.Service
 
     return {
-      description: DESCRIPTION,
+      description: DESCRIPTION, // 假设 DESCRIPTION 常量会在外部单独翻译
       parameters: Parameters,
       execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>
         Effect.gen(function* () {
@@ -26,7 +26,7 @@ export const SkillTool = Tool.define(
           if (!info) {
             const all = yield* skill.all()
             const available = all.map((item) => item.name).join(", ")
-            throw new Error(`Skill "${params.name}" not found. Available skills: ${available || "none"}`)
+            throw new Error(`未找到技能 "${params.name}"。可用技能：${available || "无"}`)
           }
 
           yield* ctx.ask({
@@ -48,16 +48,16 @@ export const SkillTool = Tool.define(
           )
 
           return {
-            title: `Loaded skill: ${info.name}`,
+            title: `已加载技能：${info.name}`,
             output: [
               `<skill_content name="${info.name}">`,
-              `# Skill: ${info.name}`,
+              `# 技能：${info.name}`,
               "",
               info.content.trim(),
               "",
-              `Base directory for this skill: ${base}`,
-              "Relative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.",
-              "Note: file list is sampled.",
+              `该技能的基准目录：${base}`,
+              "此技能中的相对路径（例如 scripts/、reference/）均相对于此基准目录。",
+              "注意：文件列表为采样数据。",
               "",
               "<skill_files>",
               files,
