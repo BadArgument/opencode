@@ -17,14 +17,13 @@ export interface TaskPromptOps {
 const id = "task"
 
 export const Parameters = Schema.Struct({
-  description: Schema.String.annotate({ description: "A short (3-5 words) description of the task" }),
-  prompt: Schema.String.annotate({ description: "The task for the agent to perform" }),
-  subagent_type: Schema.String.annotate({ description: "The type of specialized agent to use for this task" }),
+  description: Schema.String.annotate({ description: "任务的简短描述（3-5 个词）" }),
+  prompt: Schema.String.annotate({ description: "要由Agent执行的任务内容" }),
+  subagent_type: Schema.String.annotate({ description: "用于此任务的专业子Agent类型" }),
   task_id: Schema.optional(Schema.String).annotate({
-    description:
-      "This should only be set if you mean to resume a previous task (you can pass a prior task_id and the task will continue the same subagent session as before instead of creating a fresh one)",
+    description: "仅当您打算恢复先前任务时才应设置此项（传入先前的 task_id 可使任务继续沿用之前的子Agent会话，而不是创建新的会话）",
   }),
-  command: Schema.optional(Schema.String).annotate({ description: "The command that triggered this task" }),
+  command: Schema.optional(Schema.String).annotate({ description: "触发此任务的命令" }),
 })
 
 export const TaskTool = Tool.define(
@@ -68,7 +67,7 @@ export const TaskTool = Tool.define(
         session ??
         (yield* sessions.create({
           parentID: ctx.sessionID,
-          title: params.description + ` (@${next.name} subagent)`,
+          title: params.description + ` (@${next.name} 子Agent)`,
           permission: [
             ...(canTodo
               ? []
@@ -151,7 +150,7 @@ export const TaskTool = Tool.define(
                 model,
               },
               output: [
-                `task_id: ${nextSession.id} (for resuming to continue this task if needed)`,
+                `task_id: ${nextSession.id} (如需恢复以继续此任务，请使用此 ID)`,
                 "",
                 "<task_result>",
                 result.parts.findLast((item) => item.type === "text")?.text ?? "",
