@@ -4,7 +4,7 @@ import { Question } from "../question"
 import DESCRIPTION from "./question.txt"
 
 export const Parameters = Schema.Struct({
-  questions: Schema.mutable(Schema.Array(Question.Prompt)).annotate({ description: "Questions to ask" }),
+  questions: Schema.mutable(Schema.Array(Question.Prompt)).annotate({ description: "询问的问题" }),
 })
 
 type Metadata = {
@@ -28,12 +28,12 @@ export const QuestionTool = Tool.define<typeof Parameters, Metadata, Question.Se
           })
 
           const formatted = params.questions
-            .map((q, i) => `"${q.question}"="${answers[i]?.length ? answers[i].join(", ") : "Unanswered"}"`)
+            .map((q, i) => `"${q.question}"="${answers[i]?.length ? answers[i].join(", ") : "未回答"}"`)
             .join(", ")
 
           return {
-            title: `Asked ${params.questions.length} question${params.questions.length > 1 ? "s" : ""}`,
-            output: `User has answered your questions: ${formatted}. You can now continue with the user's answers in mind.`,
+            title: `已询问 ${params.questions.length} 个问题`,
+            output: `用户已回答您的问题：${formatted}。现在您可以结合用户的回答继续操作。`,
             metadata: {
               answers,
             },
