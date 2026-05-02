@@ -198,12 +198,12 @@ export const ReadTool = Tool.define(
           title,
           output: [
             `<path>${filepath}</path>`,
-            `<type>directory</type>`,
+            `<type>目录</type>`,
             `<entries>`,
             sliced.join("\n"),
             truncated
-              ? `\n(Showing ${sliced.length} of ${items.length} entries. Use 'offset' parameter to read beyond entry ${offset + sliced.length})`
-              : `\n(${items.length} entries)`,
+              ? `\n(显示 ${sliced.length} 条，共 ${items.length} 条。使用 'offset' 参数读取第 ${offset + sliced.length} 条之后的数据)`
+              : `\n(共 ${items.length} 条)`,
             `</entries>`,
           ].join("\n"),
           metadata: {
@@ -220,7 +220,7 @@ export const ReadTool = Tool.define(
       const mime = sniffAttachmentMime(sample, AppFileSystem.mimeType(filepath))
       if (isImageAttachment(mime) || isPdfAttachment(mime)) {
         const bytes = yield* fs.readFile(filepath)
-        const msg = isPdfAttachment(mime) ? "PDF read successfully" : "Image read successfully"
+        const msg = isPdfAttachment(mime) ? "PDF成功读入" : "图片成功读入"
         return {
           title,
           output: msg,
@@ -252,18 +252,18 @@ export const ReadTool = Tool.define(
         )
       }
 
-      let output = [`<path>${filepath}</path>`, `<type>file</type>`, "<content>\n"].join("\n")
+      let output = [`<path>${filepath}</path>`, `<type>文件</type>`, "<content>\n"].join("\n")
       output += file.raw.map((line, i) => `${i + file.offset}: ${line}`).join("\n")
 
       const last = file.offset + file.raw.length - 1
       const next = last + 1
       const truncated = file.more || file.cut
       if (file.cut) {
-        output += `\n\n(Output capped at ${MAX_BYTES_LABEL}. Showing lines ${file.offset}-${last}. Use offset=${next} to continue.)`
+        output += `\n\n(输出限制 ${MAX_BYTES_LABEL} 行。显示行数 ${file.offset}-${last}。使用 offset=${next} 继续查看。)`
       } else if (file.more) {
-        output += `\n\n(Showing lines ${file.offset}-${last} of ${file.count}. Use offset=${next} to continue.)`
+        output += `\n\n(显示 ${file.count} 行中的第 ${file.offset}-${last} 行。使用 offset=${next} 继续查看。)`
       } else {
-        output += `\n\n(End of file - total ${file.count} lines)`
+        output += `\n\n(文件结束 - 共 ${file.count} 行)`
       }
       output += "\n</content>"
 
