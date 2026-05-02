@@ -8,7 +8,7 @@ import * as Tool from "./tool"
 import DESCRIPTION from "./skill.txt"
 
 export const Parameters = Schema.Struct({
-  name: Schema.String.annotate({ description: "来自 available_skills 的技能名称" }),
+  name: Schema.String.annotate({ description: "来自 available_skills 的Skill名称" }),
 })
 
 export const SkillTool = Tool.define(
@@ -26,7 +26,7 @@ export const SkillTool = Tool.define(
           if (!info) {
             const all = yield* skill.all()
             const available = all.map((item) => item.name).join(", ")
-            throw new Error(`未找到技能 "${params.name}"。可用技能：${available || "无"}`)
+            throw new Error(`未找到Skill "${params.name}"。可用Skill：${available || "无"}`)
           }
 
           yield* ctx.ask({
@@ -48,15 +48,15 @@ export const SkillTool = Tool.define(
           )
 
           return {
-            title: `已加载技能：${info.name}`,
+            title: `已加载Skill：${info.name}`,
             output: [
               `<skill_content name="${info.name}">`,
-              `# 技能：${info.name}`,
+              `# Skill：${info.name}`,
               "",
               info.content.trim(),
               "",
-              `该技能的基准目录：${base}`,
-              "此技能中的相对路径（例如 scripts/、reference/）均相对于此基准目录。",
+              `该Skill的基准目录：${base}`,
+              "此Skill中的相对路径（例如 scripts/、reference/）均相对于此基准目录。",
               "注意：文件列表为采样数据。",
               "",
               "<skill_files>",
