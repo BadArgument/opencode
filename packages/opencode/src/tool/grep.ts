@@ -11,12 +11,12 @@ import * as Tool from "./tool"
 const MAX_LINE_LENGTH = 2000
 
 export const Parameters = Schema.Struct({
-  pattern: Schema.String.annotate({ description: "The regex pattern to search for in file contents" }),
+  pattern: Schema.String.annotate({ description: "用于在文件内容中搜索的正则表达式模式" }),
   path: Schema.optional(Schema.String).annotate({
-    description: "The directory to search in. Defaults to the current working directory.",
+    description: "搜索目录。默认为当前工作目录。",
   }),
   include: Schema.optional(Schema.String).annotate({
-    description: 'File pattern to include in the search (e.g. "*.js", "*.{ts,tsx}")',
+    description: '要包含在搜索中的文件模式（例如："*.js"、"*.{ts,tsx}"）',
   }),
 })
 
@@ -34,7 +34,7 @@ export const GrepTool = Tool.define(
           const empty = {
             title: params.pattern,
             metadata: { matches: 0, truncated: false },
-            output: "No files found",
+            output: "无匹配",
           }
           if (!params.pattern) {
             throw new Error("pattern is required")
@@ -111,7 +111,7 @@ export const GrepTool = Tool.define(
           if (final.length === 0) return empty
 
           const total = matches.length
-          const output = [`Found ${total} matches${truncated ? ` (showing first ${limit})` : ""}`]
+          const output = [`找到 ${total} 处匹配${truncated ? `（显示前 ${limit} 条）` : ""}`]
 
           let current = ""
           for (const match of final) {
@@ -128,13 +128,13 @@ export const GrepTool = Tool.define(
           if (truncated) {
             output.push("")
             output.push(
-              `(Results truncated: showing ${limit} of ${total} matches (${total - limit} hidden). Consider using a more specific path or pattern.)`,
+              `(结果已截断：显示 ${total} 处匹配中的 ${limit} 条（隐藏 ${total - limit} 条）。请考虑使用更具体的路径或匹配模式。)`,
             )
           }
 
           if (result.partial) {
             output.push("")
-            output.push("(Some paths were inaccessible and skipped)")
+            output.push("(部分路径无法访问，已跳过。)")
           }
 
           return {
