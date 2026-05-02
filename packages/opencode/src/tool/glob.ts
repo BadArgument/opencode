@@ -9,9 +9,9 @@ import DESCRIPTION from "./glob.txt"
 import * as Tool from "./tool"
 
 export const Parameters = Schema.Struct({
-  pattern: Schema.String.annotate({ description: "The glob pattern to match files against" }),
+  pattern: Schema.String.annotate({ description: "用于匹配文件的 glob 模式" }),
   path: Schema.optional(Schema.String).annotate({
-    description: `The directory to search in. If not specified, the current working directory will be used. IMPORTANT: Omit this field to use the default directory. DO NOT enter "undefined" or "null" - simply omit it for the default behavior. Must be a valid directory path if provided.`,
+    description: `搜索目录。若未指定，将使用当前工作目录。重要提示：如需使用默认目录，请省略此字段。请勿输入 "undefined" 或 "null"，只需省略即可触发默认行为。如果提供，必须是有效的目录路径。`,
   }),
 })
 
@@ -72,13 +72,13 @@ export const GlobTool = Tool.define(
           files.sort((a, b) => b.mtime - a.mtime)
 
           const output = []
-          if (files.length === 0) output.push("No files found")
+          if (files.length === 0) output.push("无匹配")
           if (files.length > 0) {
             output.push(...files.map((file) => file.path))
             if (truncated) {
               output.push("")
               output.push(
-                `(Results are truncated: showing first ${limit} results. Consider using a more specific path or pattern.)`,
+                `(结果已截断：仅显示前 ${limit} 条结果。请考虑使用更具体的路径或匹配模式。)`,
               )
             }
           }
