@@ -208,30 +208,6 @@ export const layer: Layer.Layer<
           results.push({ filepath: found, content: `${found} 文件的指令：\n${content}` })
         }
 
-      // Walk upward from the file being read and attach nearby instruction files once per message.
-      while (current.startsWith(root) && current !== root) {
-        const found = yield* find(current)
-        if (!found || found === target || sys.has(found) || already.has(found)) {
-          current = path.dirname(current)
-          continue
-        }
-
-        let set = s.claims.get(messageID)
-        if (!set) {
-          set = new Set()
-          s.claims.set(messageID, set)
-        }
-        if (set.has(found)) {
-          current = path.dirname(current)
-          continue
-        }
-
-        set.add(found)
-        const content = yield* read(found)
-        if (content) {
-          results.push({ filepath: found, content: `Instructions from: ${found}\n${content}` })
-        }
-
         current = path.dirname(current)
       }
 
