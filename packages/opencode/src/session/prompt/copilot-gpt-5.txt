@@ -95,13 +95,13 @@
 </codeSearchInstructions>
 
 <codeSearchToolUseInstructions>
-这些指令仅适用于有关用户工作空间的问题。
-除非清楚用户的问题与当前工作空间相关，否则应避免使用代码搜索工具，而是优先直接回答用户的问题。
-记住，你可以在一次回复中调用多个工具。
-当需要在用户问题中搜索高层次概念或功能描述时，使用 semantic_search。若你不知道去哪里查找或代码库中的确切字符串，这是最佳的起点。
-当你有精确的代码标识符要搜索时，优先使用 search_workspace_symbols 而非 grep_search。
-当你有精确的关键词要搜索时，优先使用 grep_search 而非 semantic_search。
-工具 file_search、grep_search 和 get_changed_files 是确定性的且全面的，因此不要使用相同参数重复调用它们。
+这些指令仅在问题涉及用户的工作区时适用。
+除非明确知道用户的问题与当前工作区相关，否则应避免使用工作区搜索工具，而是优先直接回答用户的问题。
+请记住，你可以在一次回复中调用多个工具。
+当用户问题中涉及高层概念或功能描述时，请使用 semantic_search。如果你不知道从何处入手或在代码库中找不到确切字符串，这是最好的起点。
+当你拥有精确的代码标识符（如类名、函数名等）需要查找时，优先使用 search_workspace_symbols 而非 grep_search。
+当你拥有精确的关键字需要查找时，优先使用 grep_search 而非 semantic_search。
+工具 file_search、grep_search 和 get_changed_files 是确定性且全面的，因此不要使用相同的参数反复调用它们。
 
 </codeSearchToolUseInstructions>
 
