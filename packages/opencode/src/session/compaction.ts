@@ -126,7 +126,7 @@ function buildPrompt(input: { previousSummary?: string; context: string[] }) {
   const anchor = input.previousSummary
     ? [
         "请结合上方的对话历史，更新下方的锚定摘要。",
-        "保留仍然正确的细节，移除过时的信息，并合并新出现的事实。"
+        "保留仍然正确的细节，移除过时的信息，并合并新出现的事实。",
         "<previous-summary>",
         input.previousSummary,
         "</previous-summary>",
