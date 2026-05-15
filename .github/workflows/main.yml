@@ -1,4 +1,3 @@
-# .github/workflows/build-windows.yml
 name: Build OpenCode for Windows
 
 on:
@@ -18,32 +17,20 @@ jobs:
         with:
           bun-version: latest
 
-      # ---------- 缓存优化 ----------
-      - name: Cache Bun global packages
+      # 新增：缓存 Bun 的全局依赖包目录（Windows 路径）
+      - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
-          # Windows 上 Bun 的全局缓存路径
-          path: ${{ env.USERPROFILE }}\.bun\install\cache
-          # 主键：OS + lockfile 哈希，确保依赖变更时自动刷新
+          # Windows 下 Bun 缓存目录默认为 C:\Users\runneradmin\.bun\install\cache
+          # 使用 ~ 可自动展开为用户目录
+          path: ~\.bun\install\cache
+          # 根据锁文件生成唯一缓存键，锁文件变化时缓存失效
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
-          # 回退键：当精确键未命中时，可复用最近一次缓存
           restore-keys: |
             ${{ runner.os }}-bun-
-      # -----------------------------
 
-      - name: Install dependencies (with corruption recovery)
-        # 使用脚本实现缓存损坏自动修复
-        shell: pwsh
-        run: |
-          try {
-            bun install
-          } catch {
-            Write-Host "##[warning] bun install failed, clearing cache and retrying..."
-            # 删除可能损坏的缓存目录
-            Remove-Item -Path "$env:USERPROFILE\.bun\install\cache" -Recurse -Force -ErrorAction SilentlyContinue
-            # 重试安装
-            bun install
-          }
+      - name: Install dependencies
+        run: bun install
 
       - name: Build executable
         working-directory: ./packages/opencode
