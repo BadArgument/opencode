@@ -1,5 +1,6 @@
 import { Effect, Schema } from "effect"
 import { HttpClient, HttpClientRequest } from "effect/unstable/http"
+import { Parser } from "htmlparser2"
 import * as Tool from "./tool"
 import TurndownService from "turndown"
 import DESCRIPTION from "./webfetch.txt"
@@ -12,11 +13,14 @@ const MAX_TIMEOUT = 120 * 1000 // 2 minutes
 export const Parameters = Schema.Struct({
   url: Schema.String.annotate({ description: "从中获取内容的 URL" }),
   format: Schema.Literals(["text", "markdown", "html"])
-    .pipe(Schema.optional, Schema.withDecodingDefault(Effect.succeed("markdown" as const)))
     .annotate({
-      description: "返回内容的格式（text、markdown 或 html）。默认为 markdown。",
-    }),
-  timeout: Schema.optional(Schema.Number).annotate({ description: "可选的超时时间（秒，最大 120）" }),
+      description: "返回内容的格式（text、markdown 或 html）。默认值为 markdown。",
+      default: "markdown",
+    })
+    .pipe(Schema.optional, Schema.withDecodingDefault(Effect.succeed("markdown" as const))),
+  timeout: Schema.optional(Schema.Number).annotate({
+    description: "可选超时时间（单位：秒，最大 120）",
+  }),
 })
 
 export const WebFetchTool = Tool.define(
@@ -138,8 +142,7 @@ export const WebFetchTool = Tool.define(
 
             case "text":
               if (contentType.includes("text/html")) {
-                const text = yield* Effect.promise(() => extractTextFromHTML(content))
-                return { output: text, title, metadata: {} }
+                return { output: extractTextFromHTML(content), title, metadata: {} }
               }
               return { output: content, title, metadata: {} }
 
@@ -154,35 +157,27 @@ export const WebFetchTool = Tool.define(
   }),
 )
 
-async function extractTextFromHTML(html: string) {
+function extractTextFromHTML(html: string) {
   let text = ""
-  let skipContent = false
+  let skipDepth = 0
 
-  const rewriter = new HTMLRewriter()
-    .on("script, style, noscript, iframe, object, embed", {
-      element() {
-        skipContent = true
-      },
-      text() {
-        // Skip text content inside these elements
-      },
-    })
-    .on("*", {
-      element(element) {
-        // Reset skip flag when entering other elements
-        if (!["script", "style", "noscript", "iframe", "object", "embed"].includes(element.tagName)) {
-          skipContent = false
-        }
-      },
-      text(input) {
-        if (!skipContent) {
-          text += input.text
-        }
-      },
-    })
-    .transform(new Response(html))
+  const parser = new Parser({
+    onopentag(name) {
+      if (skipDepth > 0 || ["script", "style", "noscript", "iframe", "object", "embed"].includes(name)) {
+        skipDepth++
+      }
+    },
+    ontext(input) {
+      if (skipDepth === 0) text += input
+    },
+    onclosetag() {
+      if (skipDepth > 0) skipDepth--
+    },
+  })
 
-  await rewriter.text()
+  parser.write(html)
+  parser.end()
+
   return text.trim()
 }
 
