@@ -7,27 +7,53 @@ on:
     branches: [ dev ]
 
 jobs:
-  # 作业2：安装依赖
   build-project:
     runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest      
-      - name: Install dependencies
-        run: bun install
+          bun-version: latest
+
+      # ---------- 缓存优化 ----------
+      - name: Cache Bun global packages
+        uses: actions/cache@v4
+        with:
+          # Windows 上 Bun 的全局缓存路径
+          path: ${{ env.USERPROFILE }}\.bun\install\cache
+          # 主键：OS + lockfile 哈希，确保依赖变更时自动刷新
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          # 回退键：当精确键未命中时，可复用最近一次缓存
+          restore-keys: |
+            ${{ runner.os }}-bun-
+      # -----------------------------
+
+      - name: Install dependencies (with corruption recovery)
+        # 使用脚本实现缓存损坏自动修复
+        shell: pwsh
+        run: |
+          try {
+            bun install
+          } catch {
+            Write-Host "##[warning] bun install failed, clearing cache and retrying..."
+            # 删除可能损坏的缓存目录
+            Remove-Item -Path "$env:USERPROFILE\.bun\install\cache" -Recurse -Force -ErrorAction SilentlyContinue
+            # 重试安装
+            bun install
+          }
+
       - name: Build executable
         working-directory: ./packages/opencode
         run: |
-          # 创建临时文件避免错误
           echo "CI Build" > ../../.github/TEAM_MEMBERS
           bun run build --single
         env:
           CI: true
-          SKIP_TEAM_CHECK: true  # 如果构建脚本支持
+          SKIP_TEAM_CHECK: true
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
