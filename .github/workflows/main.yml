@@ -17,18 +17,6 @@ jobs:
         with:
           bun-version: latest
 
-      # 新增：缓存 Bun 的全局依赖包目录（Windows 路径）
-      - name: Cache Bun dependencies
-        uses: actions/cache@v4
-        with:
-          # Windows 下 Bun 缓存目录默认为 C:\Users\runneradmin\.bun\install\cache
-          # 使用 ~ 可自动展开为用户目录
-          path: ~\.bun\install\cache
-          # 根据锁文件生成唯一缓存键，锁文件变化时缓存失效
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
       - name: Install dependencies
         run: bun install
 
